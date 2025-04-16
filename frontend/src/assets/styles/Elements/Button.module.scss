@@ -1,0 +1,19 @@
+@import '../variables';
+
+.BTN {
+    height: 100%;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px; // Slightly rounded corners
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Subtle shadow
+}
+
+.BTN_ICON {
+    color: white;
+}
+
