@@ -1,12 +1,8 @@
 const express = require('express');
-const { addCar, findCars } = require('../controllers/productController');
+const ProductController = require('../controllers/productController');
 
 const router = express.Router();
 
-// Route to add a new car
-router.post('/cars', addCar);
-
-// Route to get cars with optional filters
-router.get('/cars', findCars);
-
+router.post('/fetchSearchQuery', ProductController.handleSearchQuery)
+router.get('/initialdata', ProductController.handleCarQuery)
 module.exports = router;

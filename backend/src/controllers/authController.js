@@ -1,62 +1,159 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
-require('dotenv').config();
+const { generateToken } = require('../utils/jwUtils');
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
 const signup = async (req, res) => {
-    try {
-        const { name, email, password,role } = req.body;
+  try {
+    const { name, email, password, role, confirmPassword, mobile, terms } = req.body;
 
-        const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (userExists.rows.length > 0) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = await pool.query(
-            'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role',
-            [name, email, hashedPassword,role]
-        );
-
-        res.status(201).json(newUser.rows[0]);
-    } catch (error) {
-        console.log("SIGN IN ERROR",error)
-        res.status(500).json({ message: 'Server error' });
+    // Step 1: Field validation
+    if (!name || !email || !password || !confirmPassword || !mobile || !role) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
     }
-}
-const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        if (!email || !password || (req.path === "/signup" && !name)) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-        const user = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
 
-
-        if (user.rows.length === 0) {
-            return res.status(400).json({ message: "Invalid Email Address!\nUser doesn't exist!" });
-        }
-
-
-        const validPassword = await bcrypt.compare(password, user.rows[0].password);
-        if (!validPassword) {
-            console.log("Incorrect Password Baby!")
-            return res.status(400).json({ message: "Incorrect Password!" });
-        }
-
-
-        const token = jwt.sign(
-            { id: user.rows[0].id, email: user.rows[0].email },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        res.json({ token });
-
-    } catch (error) {
-        console.error("Login Error:", error);
-        res.status(500).json({ message: "Server error" });
+    if (password !== confirmPassword) {
+      return res.status(400).json({ success: false, message: 'Passwords do not match' });
     }
+
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long' });
+    }
+
+    if (!/^\d{10}$/.test(mobile)) {
+      return res.status(400).json({ success: false, message: 'Mobile number must be 10 digits' });
+    }
+
+    if (!terms) {
+      return res.status(400).json({ success: false, message: 'You must accept the terms and conditions' });
+    }
+
+    // Step 2: Check if user already exists
+    const userExists = await prisma.users.findUnique({ where: { email } });
+    if (userExists) {
+      return res.status(409).json({ success: false, message: 'User already exists' });
+    }
+
+    // Step 3: Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Step 4: Create user in DB
+    const newUser = await prisma.users.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role,
+        mobile,
+      },
+    });
+
+    // Step 5: Generate token
+    const token = generateToken(newUser);
+
+    // Step 5.1: Set cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false, // set to true in production (HTTPS)
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
+    // Step 6: Send response
+    return res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        mobile: newUser.mobile,
+      },
+      token,
+    });
+
+
+  } catch (error) {
+    console.error('Signup Error:', error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
 };
-module.exports = { signup, login };
+
+
+const login = async (req, res) => {
+  console.log("Login request body:", req.body);
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'All fields are required' });
+  }
+
+  try {
+    // Step 1: Find user using Prisma
+    const user = await prisma.users.findUnique({ where: { email } });
+    console.log("User from DB:", user);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User doesn't exist" });
+    }
+
+    // Step 2: Password Check using bcrypt
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", isMatch);
+
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Incorrect password' });
+    }
+
+    // Step 3: Token Generation (Assuming you have a generateToken() util)
+    const token = generateToken(user);
+
+    // Step 4: Set Cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false, // set to true in production (HTTPS)
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
+
+    // Step 5: Respond
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      token,
+    });
+
+  } catch (error) {
+    console.error('Login Error:', error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+const logout = (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'Lax',
+  });
+  res.status(200).json({ message: 'Logged out' });
+};
+const returnUser = (req, res) => {
+  try {
+    const user = req.user; // from the JWT middleware
+    if (!user) return res.status(404).json({ message: 'Please log in to view details!' });
+
+    // You can fetch full user from DB here if needed
+    res.status(200).json({ success: true, user: req.user });
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+}
+
+
+module.exports = { signup, login, logout, returnUser };
