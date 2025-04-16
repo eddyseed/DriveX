@@ -18,12 +18,10 @@ const IDVerification: React.FC = () => {
     emailOtp: ''
   });
 
-  const [isDirty, setIsDirty] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setIsDirty(true);
   };
 
   const resetForm = () => {

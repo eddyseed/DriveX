@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../../../assets/styles/Components/Forms/UsedCar.module.scss';
 import InputField from '../../UI/atoms/InputField';
 import Button from '../../UI/atoms/Button';
 import { useColorContext } from '../../../context/ColorContext';
 import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
+import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
 const VehicleHistory: React.FC = () => {
   const { colors } = useColorContext();
   const { primary, secondary } = colors.variants;
@@ -16,15 +17,28 @@ const VehicleHistory: React.FC = () => {
     accidentHistory: ''
   });
 
-  const [isDirty, setIsDirty] = useState(false);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setIsDirty(true);
   };
 
-  const resetForm = () => {
+  useEffect(() => {
+    (async () => {
+      const saved = await loadDraft('vehicleHistoryFormData');
+      if (saved && typeof saved === 'object') setFormData(saved);
+    })();
+  }, []);
+
+  // Save draft when formData changes
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      saveDraft('vehicleHistoryFormData', formData);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [formData]);
+
+  const resetForm = async () => {
     setFormData({
       previousOwners: '',
       distanceDriven: '',
@@ -32,6 +46,7 @@ const VehicleHistory: React.FC = () => {
       lastServiceDate: '',
       accidentHistory: ''
     });
+    await clearDraft('vehicleHistoryFormData');
   };
 
   return (

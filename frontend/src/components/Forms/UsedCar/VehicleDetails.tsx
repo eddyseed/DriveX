@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../../../assets/styles/Components/Forms/UsedCar.module.scss';
 import InputField from '../../UI/atoms/InputField';
 import Button from '../../UI/atoms/Button';
 import { useColorContext } from '../../../context/ColorContext';
 import ReplayIcon from '@mui/icons-material/Replay';
+import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
 
 const VehicleDetails: React.FC = () => {
   const { colors } = useColorContext();
@@ -39,15 +40,28 @@ const VehicleDetails: React.FC = () => {
   });
 
 
-  const [, setIsDirty] = useState(false);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setIsDirty(true);
   };
+  // Load draft on component mount
+    useEffect(() => {
+      (async () => {
+        const saved = await loadDraft('vehicleDetailInfo');
+        if (saved && typeof saved === 'object') setFormData(saved);
+      })();
+    }, []);
+  
+    // Save draft when formData changes
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        saveDraft('vehicleDetailInfo', formData);
+      }, 500);
+  
+      return () => clearTimeout(timeout);
+    }, [formData]);
 
-  const resetForm = () => {
+  const resetForm = async () => {
     setFormData({
       vin: '',
       producer: '',
@@ -76,6 +90,7 @@ const VehicleDetails: React.FC = () => {
       fuelTankCapacity: '',
       emissionNormCompliance: '',
     });
+    await clearDraft('vehicleDetailInfo');
   };
 
   return (

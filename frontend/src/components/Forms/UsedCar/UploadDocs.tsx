@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../../../assets/styles/Components/Forms/UsedCar.module.scss';
 import InputField from '../../UI/atoms/InputField';
 import Button from '../../UI/atoms/Button';
 import { useColorContext } from '../../../context/ColorContext';
 import ReplayIcon from '@mui/icons-material/Replay';
+import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
 
 const UploadDocs: React.FC = () => {
   const { colors } = useColorContext();
@@ -19,7 +20,22 @@ const UploadDocs: React.FC = () => {
     saleAgreement: null,
     roadTaxReceipt: null,
   });
-
+  // Load draft on component mount
+    useEffect(() => {
+      (async () => {
+        const saved = await loadDraft('uploadDocFormData');
+        if (saved && typeof saved === 'object') setFormData(saved);
+      })();
+    }, []);
+  
+    // Save draft when formData changes
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        saveDraft('uploadDocFormData', formData);
+      }, 500);
+  
+      return () => clearTimeout(timeout);
+    }, [formData]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
     if (files && files.length > 0) {
@@ -27,7 +43,7 @@ const UploadDocs: React.FC = () => {
     }
   };
 
-  const resetForm = () => {
+  const resetForm = async () => {
     setFormData({
       rc: null,
       insurancePolicy: null,
@@ -38,6 +54,7 @@ const UploadDocs: React.FC = () => {
       saleAgreement: null,
       roadTaxReceipt: null,
     });
+    await clearDraft('uploadDocFormData');
   };
 
   return (
