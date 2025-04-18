@@ -4,7 +4,11 @@ const prisma = new PrismaClient();
 
 //For Adding Car Data To Database
 const addUsedCarDetails = async (req, res) => {
-    // const {vin,}
+    if (a[1] === 'owner') {
+        const {firstName, middleName, lastName, mobileNumber, altMobileNumber, dateOfBirth, address} = req.body[0];
+        const fullName = firstName+middleName+lastName
+        
+    }
 }
 
 
@@ -89,5 +93,5 @@ const handleCarQuery = async (_, res) => {
     }
 }
 module.exports = {
-    handleSearchQuery, handleCarQuery
+    handleSearchQuery, handleCarQuery, addUsedCarDetails
 };

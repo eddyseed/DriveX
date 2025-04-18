@@ -1,6 +1,7 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
+import ErrorModal from '../components/Common/Modals/ErrorModal';
 
 type ProtectedRoutesProps = {
   children: ReactNode;
@@ -8,11 +9,18 @@ type ProtectedRoutesProps = {
 
 const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
   const { user } = useAuth();
+  const location = useLocation();
+  const [showRedirect, setShowRedirect] = useState(false);
 
-if (!user) {
-    alert('Please log in first to access the dashboard.');
-    return <Navigate to="/user/login" replace />;
-}
+  if (!user) {
+    if (!showRedirect) {
+      return <Navigate to="/user/login" state={{ from: location, loginRequired: true }} replace />;
+    }
+
+    return (
+      <></>
+    );
+  }
 
   return <>{children}</>;
 };

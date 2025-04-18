@@ -8,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
 const VehicleHistory: React.FC = () => {
   const { colors } = useColorContext();
-  const { primary, secondary } = colors.variants;
+  const { primary, darkPrimary } = colors.variants;
   const [formData, setFormData] = useState({
     previousOwners: '',
     distanceDriven: '',
@@ -84,7 +84,7 @@ const VehicleHistory: React.FC = () => {
             />
           </section>
           <section>
-            <Button children={<AddIcon />} colors={secondary}></Button>
+            <Button children={<AddIcon />} colors={darkPrimary}></Button>
           </section>
         </div>
         <div>
@@ -146,10 +146,12 @@ const VehicleHistory: React.FC = () => {
             />
           </section>
         </div>
-        <div className="flex justify-end space-x-4 text-[8px]">
+
+      </div>
+      <div>
+        <div className="space-x-4">
           <Button children={<ReplayIcon />} text="Reset" colors={primary} onClick={resetForm}></Button>
-          <Button children={undefined} text="Save" colors={primary}></Button>
-          <Button children={undefined} text="Continue" colors={secondary}></Button>
+          <Button children={undefined} text="Save" colors={darkPrimary}></Button>
         </div>
       </div>
     </div>

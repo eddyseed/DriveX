@@ -8,7 +8,7 @@ import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils'
 
 const VehicleDetails: React.FC = () => {
   const { colors } = useColorContext();
-  const { primary, secondary } = colors.variants;
+  const { primary, darkPrimary } = colors.variants;
 
   const [formData, setFormData] = useState({
     vin: '',
@@ -45,21 +45,21 @@ const VehicleDetails: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   // Load draft on component mount
-    useEffect(() => {
-      (async () => {
-        const saved = await loadDraft('vehicleDetailInfo');
-        if (saved && typeof saved === 'object') setFormData(saved);
-      })();
-    }, []);
-  
-    // Save draft when formData changes
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        saveDraft('vehicleDetailInfo', formData);
-      }, 500);
-  
-      return () => clearTimeout(timeout);
-    }, [formData]);
+  useEffect(() => {
+    (async () => {
+      const saved = await loadDraft('vehicleDetailInfo');
+      if (saved && typeof saved === 'object') setFormData(saved);
+    })();
+  }, []);
+
+  // Save draft when formData changes
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      saveDraft('vehicleDetailInfo', formData);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [formData]);
 
   const resetForm = async () => {
     setFormData({
@@ -486,10 +486,9 @@ const VehicleDetails: React.FC = () => {
           </section>
         </div>
       </div>
-      <div className="flex justify-end space-x-4 text-[8px]">
+      <div className="space-x-4">
         <Button children={<ReplayIcon />} text="Reset" colors={primary} onClick={resetForm}></Button>
-        <Button children={undefined} text="Save" colors={primary}></Button>
-        <Button children={undefined} text="Continue" colors={secondary}></Button>
+        <Button children={undefined} text="Save" colors={darkPrimary}></Button>
       </div>
     </div>
   );

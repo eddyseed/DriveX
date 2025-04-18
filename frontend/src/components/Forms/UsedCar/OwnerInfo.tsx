@@ -5,9 +5,10 @@ import Button from '../../UI/atoms/Button';
 import { useColorContext } from '../../../context/ColorContext';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
+import axios from 'axios';
 const OwnerInfo: React.FC = () => {
   const { colors } = useColorContext();
-  const { primary, secondary } = colors.variants
+  const { primary, darkPrimary } = colors.variants
   const [formData, setFormData] = useState({
     firstName: '', middleName: '', lastName: '', mobileNumber: '', altMobileNumber: '', dateOfBirth: '', address: ''
   })
@@ -31,7 +32,22 @@ const OwnerInfo: React.FC = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   }
-  const resetForm = async() => {
+  const handleSubmit = async () => {
+    if (!formData.firstName || !formData.lastName || !formData.mobileNumber || !formData.dateOfBirth || !formData.address) {
+      alert("Please fill in all the required fields")
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/api/abstract/addUsedCar', [formData, 'owner'])
+
+
+
+    } catch (error) {
+      console.error(error)
+    }
+
+
+  }
+  const resetForm = async () => {
     setFormData({
       firstName: '',
       middleName: '',
@@ -64,7 +80,7 @@ const OwnerInfo: React.FC = () => {
         </div>
         <div>
           <section>
-            <label htmlFor="firstName">First Name</label>
+            <label htmlFor="firstName">First Name*</label>
             <InputField
               type="text"
               id="firstName"
@@ -89,7 +105,7 @@ const OwnerInfo: React.FC = () => {
             />
           </section>
           <section>
-            <label htmlFor="lastName">Last Name</label>
+            <label htmlFor="lastName">Last Name*</label>
             <InputField
               type="text"
               id="lastName"
@@ -112,7 +128,7 @@ const OwnerInfo: React.FC = () => {
         </div>
         <div>
           <section>
-            <label htmlFor="mobileNumber">Primary Mobile Number</label>
+            <label htmlFor="mobileNumber">Primary Mobile Number*</label>
             <InputField
               type="tel"
               id="mobileNumber"
@@ -147,7 +163,7 @@ const OwnerInfo: React.FC = () => {
         </div>
         <div>
           <section>
-            <label htmlFor="dateOfBirth">Date of Birth</label>
+            <label htmlFor="dateOfBirth">Date of Birth*</label>
             <InputField
               type="date"
               id="dateOfBirth"
@@ -170,7 +186,7 @@ const OwnerInfo: React.FC = () => {
         </div>
         <div>
           <section>
-            <label htmlFor="address">Permanent Address</label>
+            <label htmlFor="address">Permanent Address*</label>
             <InputField
               type="text"
               id="address"
@@ -183,22 +199,12 @@ const OwnerInfo: React.FC = () => {
             />
           </section>
         </div>
-        <div className="grid grid-cols-2">
-          <div className="grid grid-rows-[auto] items-center">
-            <label>
-              <input type="checkbox" name="indianCitizen" required />
-              <span className="ml-2">I agree that I am an Indian citizen.</span>
-            </label>
-            <label>
-              <input type="checkbox" name="termsAndConditions" required />
-              <span className="ml-2">I agree to the terms and conditions.</span>
-            </label>
-          </div>
-          <div className="flex justify-evenly space-x-4 text-[8px]">
-            <Button children={<ReplayIcon />} text="Reset" colors={primary} onClick={resetForm}></Button>
-            <Button children={undefined} text="Save" colors={primary}></Button>
-            <Button children={undefined} text="Continue" colors={secondary}></Button>
-          </div>
+
+      </div>
+      <div>
+        <div className="space-x-4">
+          <Button children={<ReplayIcon />} text="Reset" colors={primary} onClick={resetForm}></Button>
+          <Button children={undefined} text="Save" colors={darkPrimary} onClick={handleSubmit}></Button>
         </div>
       </div>
     </div>

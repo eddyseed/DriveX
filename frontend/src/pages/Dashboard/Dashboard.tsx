@@ -9,7 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 const Dashboard: React.FC = () => {
   const { user } = useAuth()
   const { colors } = useColorContext()
-  const { warningRed, secondary, darkSecondary } = colors.variants
+  const { warningRed, darkPrimary, darkSecondary } = colors.variants
   const { logout } = useAuth()
   return (
     <div className={`${styles.DASHBOARD_CONTAINER}`}>
@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
               >
                 <LogoutIcon />
               </Button>
-              <Button colors={secondary}>{<SettingsIcon />}</Button>
+              <Button colors={darkPrimary}>{<SettingsIcon />}</Button>
             </div>
           </section>
           <section>

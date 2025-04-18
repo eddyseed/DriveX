@@ -12,6 +12,7 @@ import { useColorContext } from '../../context/ColorContext';
 import { Link, useNavigate } from 'react-router-dom';
 import signUpPhoto from '../../assets/images/SignUp.png';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import ErrorModal from '../../components/Common/Modals/ErrorModal';
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -24,7 +25,7 @@ const SignupPage: React.FC = () => {
 
   });
   const { colors } = useColorContext();
-  const { primary, secondary, darkSecondary } = colors.variants;
+  const { primary, darkPrimary, darkSecondary } = colors.variants;
   const navigate = useNavigate()
   const [error, setError] = useState('');
 
@@ -101,7 +102,7 @@ const SignupPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Error during sign up:', error);
-      setError('An error occurred during sign up. Please try again.');
+      setError('An error occurred during sign up.');
 
     }
 
@@ -112,9 +113,9 @@ const SignupPage: React.FC = () => {
       <main className='car-banner montserrat-ff'>
         <div style={{ "--bg-img": `url(${signUpPhoto})` } as React.CSSProperties}>
           <div className='bg-black bg-opacity-50 flex flex-col h-full w-full px-5 py-10 space-y-5'>
-            <div> <Button colors={primary} onClick={(e) => {}} text='Back To Home' to='/'><KeyboardBackspaceIcon/></Button></div>
+            <div> <Button colors={primary} onClick={(e) => { }} text='Back To Home' to='/'><KeyboardBackspaceIcon /></Button></div>
             <div className='text-white text-3xl font-semibold'>
-            <Link to="/" className='bungee-tint-regular text-4xl'>DriveX</Link>
+              <Link to="/" className='bungee-tint-regular text-4xl'>DriveX</Link>
             </div>
             <div className='text-white text-3xl font-semibold'>Your Ultimate Car Marketplace</div>
           </div>
@@ -135,9 +136,9 @@ const SignupPage: React.FC = () => {
         <div>
           <div>
             <div className='flex items-center space-x-3'>
-              <Button colors={secondary} text='Continue With Apple'>{<AppleIcon />}</Button>
+              <Button colors={darkPrimary} text='Continue With Apple'>{<AppleIcon />}</Button>
               <Button colors={darkSecondary} text='Continue With Google'>{<GoogleIcon />}</Button>
-              <Button colors={secondary} text='Continue With Twitter'>{<TwitterIcon />}</Button>
+              <Button colors={darkPrimary} text='Continue With Twitter'>{<TwitterIcon />}</Button>
 
             </div>
             <div className=''>
@@ -150,7 +151,7 @@ const SignupPage: React.FC = () => {
           <div>
             <div className='flex items-center'>
               {/* Error Messsage box */}
-              {error && <div className='bg-red-600 rounded-lg px-5 h-2/5 w-3/5 flex items-center text-white'>{<DangerousIcon />}{error}!</div>}
+              {error && <ErrorModal errorHead={'Failure in Sign Up :('} visible={true} onClose={() => setError('')} errorMsg={error} />}
             </div>
             <div className="grid grid-cols-2">
               <div className='space-y-1'>
@@ -206,7 +207,15 @@ const SignupPage: React.FC = () => {
           </div>
           <div className='flex items-center space-x-2 justify-end'>
 
-            <Button colors={secondary} onClick={(e) => { e.preventDefault(); handleSubmit(); }}>Register</Button>
+            <Button disabled={
+              !formData.email ||
+              !formData.password ||
+              !formData.confirmPassword ||
+              !formData.mobile ||
+              !formData.name ||
+              !formData.role ||
+              !formData.terms
+            } onClick={(e) => { e.preventDefault(); handleSubmit(); }}>Register</Button>
 
           </div>
         </div>

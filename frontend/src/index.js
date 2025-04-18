@@ -13,7 +13,7 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ColorProvider>
-          <App/>
+            <App />
         </ColorProvider>
       </AuthProvider>
     </QueryClientProvider>

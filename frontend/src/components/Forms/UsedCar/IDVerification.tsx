@@ -7,7 +7,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 
 const IDVerification: React.FC = () => {
   const { colors } = useColorContext();
-  const { primary, secondary } = colors.variants;
+  const { primary, darkPrimary } = colors.variants;
 
   const [formData, setFormData] = useState({
     aadharAddress: '',
@@ -150,10 +150,9 @@ const IDVerification: React.FC = () => {
         </div>
 
       </div>
-      <div className="flex justify-end space-x-4 text-[8px]">
+      <div className="space-x-4">
         <Button children={<ReplayIcon />} text="Reset" colors={primary} onClick={resetForm}></Button>
-        <Button children={undefined} text="Save" colors={primary}></Button>
-        <Button children={undefined} text="Continue" colors={secondary}></Button>
+        <Button children={undefined} text="Save" colors={darkPrimary}></Button>
       </div>
     </div>
   );

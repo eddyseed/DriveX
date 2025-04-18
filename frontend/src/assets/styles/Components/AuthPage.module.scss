@@ -2,7 +2,7 @@
 @import '../variables';
 
 .LOGIN_CONTAINER {
-    height: 100vh;
+    block-size: 100vh;
     display: grid;
     grid-template-columns: 2fr 2fr;
     overflow: hidden;
@@ -19,8 +19,8 @@
             justify-self: center;
             border: 1px solid $jet;
             background-color: $ghost-white;
-            height: 98%;
-            width: 96%;
+            block-size: 98%;
+            inline-size: 96%;
             border-radius: 10px;
 
             display: grid;
@@ -54,8 +54,8 @@
                             @include flexbox(row, space-evenly, center);
 
                             &>button {
-                                height: 60%;
-                                width: 30%;
+                                block-size: 60%;
+                                inline-size: 30%;
                                 border: 1px solid $platinum;
                             }
                         }
@@ -78,8 +78,8 @@
                                 &:nth-child(3) {
                                     &>div {
                                         background-color: $jet;
-                                        width: 90%;
-                                        height: 1%;
+                                        inline-size: 90%;
+                                        block-size: 1%;
                                     }
                                 }
 
@@ -98,11 +98,11 @@
 
                             &>section {
                                 &>div {
-                                    width: 100%;
-                                    height: 60%;
+                                    inline-size: 100%;
+                                    block-size: 60%;
 
                                     &>input {
-                                        width: inherit;
+                                        inline-size: inherit;
                                     }
                                 }
                             }
@@ -125,8 +125,8 @@
 
                         &:nth-child(1) {
                             &>button {
-                                height: 80%;
-                                width: 90%;
+                                block-size: 80%;
+                                inline-size: 90%;
                                 color: white;
                             }
                         }
@@ -138,7 +138,7 @@
 }
 .AUTH_CONTAINER{
     display: grid;
-    height: 100vh;
+    block-size: 100vh;
     grid-template-columns: 1fr 2fr;
     &>main{
         display: inherit;
@@ -149,8 +149,8 @@
           
             & > div {
               position: relative; // ⬅️ important for ::before positioning
-              height: 98%;
-              width: 96%;
+              block-size: 98%;
+              inline-size: 96%;
               margin: auto;
               border-radius: 10px;
               overflow: hidden; // ⬅️ clips ::before inside border-radius
@@ -158,9 +158,9 @@
               &::before {
                 content: "";
                 position: absolute;
-                top: 0; left: 0;
-                height: 100%;
-                width: 100%;
+                inset-block-start: 0; inset-inline-start: 0;
+                block-size: 100%;
+                inline-size: 100%;
                 background-image: var(--bg-img);
                 background-size: cover;
                 background-position: center;
@@ -181,7 +181,7 @@
             background-color: $ghost-white;
             padding: 0 2rem;
             border: 1px solid $jet;
-            height: 98%; width: 98%;
+            block-size: 98%; inline-size: 98%;
             margin: auto;
             border-radius: 10px;
             grid-template-rows: 1fr 3fr 0.5fr;
@@ -210,8 +210,8 @@
                                             background-color: $jet;
                                             align-self: center;
                                             justify-self: flex-end;
-                                            width: 90%;
-                                            height: 1%;
+                                            inline-size: 90%;
+                                            block-size: 1%;
                                         }
                                         &:nth-child(2){
                                             color: $jet;
@@ -221,8 +221,8 @@
                                             background-color: $jet;
                                             align-self: center;
                                             justify-self: flex-start;
-                                            width: 90%;
-                                            height: 1%;
+                                            inline-size: 90%;
+                                            block-size: 1%;
                                         }
                                     }
                                 }
@@ -237,11 +237,11 @@
                                         color: $cerulean;
                                     }
                                     >div{
-                                        width: 95%;
-                                        height: 40%;
+                                        inline-size: 95%;
+                                        block-size: 40%;
                                     }
                                     >select{
-                                        max-width: 90%;
+                                        max-inline-size: 90%;
                                         border-radius: 5px;
                                         background-color: $ghost-white;
                                         color: $jet;
@@ -256,7 +256,7 @@
                     &>div{
                         &:nth-child(2){
                             >button{
-                                width: 40%;
+                                inline-size: 40%;
                             }
                         }
                     }

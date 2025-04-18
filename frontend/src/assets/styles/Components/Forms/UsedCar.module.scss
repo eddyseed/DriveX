@@ -44,15 +44,21 @@
                     &>div {
                         &:nth-child(1) {
                             block-size: 5rem;
-
+                            
                             &>header {
                                 block-size: 100%;
                                 @include flexbox(column, center, flex-start);
                             }
                         }
+                        &:nth-child(3){
+                            display: flex;
+                            block-size: 4rem;
+                            align-items: center;
+                            font-size: 8px;
+                        }
                     }
-                }
 
+                }
             }
         }
     }
@@ -193,7 +199,8 @@
     }
 }
 
-.vehicleDetails,.IDVerification {
+.vehicleDetails,
+.IDVerification {
     padding: 0 16px;
 
     &>div {
