@@ -1,10 +1,14 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+
 import styles from '../../../assets/styles/Components/Forms/UsedCar.module.scss';
 import InputField from '../../UI/atoms/InputField';
 import Button from '../../UI/atoms/Button';
 import { useColorContext } from '../../../context/ColorContext';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
+import ConfirmModal from '../../Common/Modals/ConfirmModal';
+import ErrorModal from '../../Common/Modals/ErrorModal';
 
 const VehicleDetails: React.FC = () => {
   const { colors } = useColorContext();
@@ -38,28 +42,31 @@ const VehicleDetails: React.FC = () => {
     fuelTankCapacity: '',
     emissionNormCompliance: '',
   });
-
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const isFormIncomplete = Object.entries(formData).some(([_, value]) => !value);
+  const [error, setError] = useState<string>("");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  // Load draft on component mount
-  useEffect(() => {
-    (async () => {
-      const saved = await loadDraft('vehicleDetailInfo');
-      if (saved && typeof saved === 'object') setFormData(saved);
-    })();
-  }, []);
+  {
+    // Load draft on component mount
+    useEffect(() => {
+      (async () => {
+        const saved = await loadDraft('vehicleDetailInfo');
+        if (saved && typeof saved === 'object') setFormData(saved);
+      })();
+    }, []);
 
-  // Save draft when formData changes
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      saveDraft('vehicleDetailInfo', formData);
-    }, 500);
+    // Save draft when formData changes
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        saveDraft('vehicleDetailInfo', formData);
+      }, 500);
 
-    return () => clearTimeout(timeout);
-  }, [formData]);
+      return () => clearTimeout(timeout);
+    }, [formData]);
+  }
 
   const resetForm = async () => {
     setFormData({
@@ -92,6 +99,31 @@ const VehicleDetails: React.FC = () => {
     });
     await clearDraft('vehicleDetailInfo');
   };
+  const handleSave = async () => {
+    if (isFormIncomplete) {
+      setError("Please fill in all the required fields");
+
+      return;
+    }
+    setShowConfirmation(true);
+    setError('');
+  };
+  const handleConfirm = async (confirmed: boolean) => {
+    setShowConfirmation(false);
+    if (!confirmed) return;
+
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/api/abstract/addUsedCar',
+        [formData, 'vehicleDetails']
+      );
+      if (response.data.message) {
+        await saveDraft('vehicleDetailsFormData', formData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className={styles.vehicleDetails}>
@@ -101,6 +133,17 @@ const VehicleDetails: React.FC = () => {
           <p className="text-gray-600">
             Fill in the specifications of the vehicle.
           </p>
+          {showConfirmation && (
+            <ConfirmModal
+              msgHead="Ready to Save?"
+              msgTitle="Are you sure you want to save the data?"
+              visible={true}
+              onConfirm={handleConfirm}
+              onClose={() => setShowConfirmation(false)}
+            />
+          )}
+          {error && <ErrorModal head={'Incomplete Form Detected!'} visible={true} onClose={() => setError('')} msg={error} />
+          }
         </header>
       </div>
 
@@ -487,8 +530,8 @@ const VehicleDetails: React.FC = () => {
         </div>
       </div>
       <div className="space-x-4">
-        <Button children={<ReplayIcon />} text="Reset" colors={primary} onClick={resetForm}></Button>
-        <Button children={undefined} text="Save" colors={darkPrimary}></Button>
+        <Button text="Reset" colors={primary} onClick={resetForm}><ReplayIcon /></Button>
+        <Button children={undefined} text="Save" colors={darkPrimary} onClick={() => handleSave} disabled={isFormIncomplete} />
       </div>
     </div>
   );
