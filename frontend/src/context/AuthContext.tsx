@@ -35,7 +35,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     const fetchUser = async () => {
         try {
             const res = await axios.get<{ user: User }>('http://localhost:5000/api/auth/me');
-            console.log(res.data.user)
             setUser(res.data.user)
             setIsAuthenticated(true)
         } catch (error) {

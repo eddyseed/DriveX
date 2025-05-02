@@ -16,7 +16,9 @@ app.use(cors({
 
 // Test Route
 app.get('/', (req, res) => {
-    res.send("meoww");
+    res.json({
+        "name":"DriveX"
+    });
 });
 // API Routes
 app.use('/api/auth', authRoutes);

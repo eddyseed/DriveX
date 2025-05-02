@@ -81,7 +81,6 @@ const signup = async (req, res) => {
 
 
 const login = async (req, res) => {
-  console.log("Login request body:", req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -91,7 +90,6 @@ const login = async (req, res) => {
   try {
     // Step 1: Find user using Prisma
     const user = await prisma.users.findUnique({ where: { email } });
-    console.log("User from DB:", user);
 
     if (!user) {
       return res.status(404).json({ success: false, message: "User doesn't exist" });
@@ -99,7 +97,6 @@ const login = async (req, res) => {
 
     // Step 2: Password Check using bcrypt
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("Password match:", isMatch);
 
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Incorrect password' });
