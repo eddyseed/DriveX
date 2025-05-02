@@ -151,7 +151,7 @@ const SignupPage: React.FC = () => {
           <div>
             <div className='flex items-center'>
               {/* Error Messsage box */}
-              {error && <ErrorModal errorHead={'Failure in Sign Up :('} visible={true} onClose={() => setError('')} errorMsg={error} />}
+              {error && <ErrorModal head={'Failure in Sign Up :('} visible={true} onClose={() => setError('')} msg={error} />}
             </div>
             <div className="grid grid-cols-2">
               <div className='space-y-1'>

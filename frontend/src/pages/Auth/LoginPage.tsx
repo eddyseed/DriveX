@@ -13,7 +13,6 @@ import signInPhoto from '../../assets/images/SignIn.png';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useAuth } from '../../context/AuthContext';
 import ErrorModal from '../../components/Common/Modals/ErrorModal';
-import SuccesModal from '../../components/Common/Modals/SuccessModal';
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -95,8 +94,8 @@ const LoginPage: React.FC = () => {
           </div>
           <div>
             <div>
-              {showError && <ErrorModal errorHead={'Login Required!'} visible={true} onClose={() => setError('')} errorMsg={'Kindly proceed from here.'} />}
-              {error && <ErrorModal errorHead={'Failure in Login :('} visible={true} onClose={() => setError('')} errorMsg={error} />}
+              {showError && <ErrorModal head={'Login Required!'} visible={true} onClose={() => setError('')} msg={'Kindly proceed from here.'} />}
+              {error && <ErrorModal head={'Failure in Login :('} visible={true} onClose={() => setError('')} msg={error} />}
             </div>
 
             <div className="grid grid-cols-2">
