@@ -5,13 +5,13 @@ import { useColorContext } from '../../../context/ColorContext';
 import styles from '../../../assets/styles/Components/Modals.module.scss';
 import { motion, AnimatePresence } from 'framer-motion';
 interface ErrorModalProps {
-  errorHead: string;
-  errorMsg: string;
+  head: string;
+  msg: string;
   visible: boolean;
   onClose: () => void;
 }
 
-const ErrorModal: React.FC<ErrorModalProps> = ({ errorHead, errorMsg, visible, onClose }) => {
+const ErrorModal: React.FC<ErrorModalProps> = ({ head, msg, visible, onClose }) => {
   const { colors } = useColorContext();
   const { warningRed } = colors.variants;
 
@@ -39,10 +39,10 @@ const ErrorModal: React.FC<ErrorModalProps> = ({ errorHead, errorMsg, visible, o
         >
           <section className="grid grid-rows-2">
             <div className='text-red-500 font-semibold flex items-end uppercase'>
-              {errorHead}
+              {head}
             </div>
-            <div className='text-white'>
-              {errorMsg}
+            <div>
+              {msg}
             </div>
           </section>
           <section>
