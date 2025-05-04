@@ -87,7 +87,10 @@ const OwnerInfo: React.FC = () => {
     try {
       const response = await axios.post(
         'http://localhost:5000/api/abstract/addUsedCar',
-        [formData, 'ownerData']
+        {
+          formData,
+          type: 'ownerData',
+        }
       );
       if (response.data.message) {
         await saveDraft('ownerInfo', formData);

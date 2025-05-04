@@ -9,11 +9,11 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
 import ConfirmModal from '../../Common/Modals/ConfirmModal';
 import ErrorModal from '../../Common/Modals/ErrorModal';
-
+import { useForm } from '../../../context/UsedCarFormContext';
 const VehicleDetails: React.FC = () => {
   const { colors } = useColorContext();
   const { primary, darkPrimary } = colors.variants;
-
+  const { setUsedCarFormData } = useForm();
   const [formData, setFormData] = useState({
     vin: '',
     producer: '',
@@ -48,6 +48,10 @@ const VehicleDetails: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'vin') {
+      setUsedCarFormData((prev: any) => ({ ...prev, vin: value }));
+    }
   };
   {
     // Load draft on component mount
@@ -106,7 +110,7 @@ const VehicleDetails: React.FC = () => {
       return;
     }
     setShowConfirmation(true);
-    setError('');
+    setError('')
   };
   const handleConfirm = async (confirmed: boolean) => {
     setShowConfirmation(false);
@@ -115,7 +119,10 @@ const VehicleDetails: React.FC = () => {
     try {
       const response = await axios.post(
         'http://localhost:5000/api/abstract/addUsedCar',
-        [formData, 'vehicleDetails']
+        {
+          formData,
+          type: 'vehicleDetails',
+        }
       );
       if (response.data.message) {
         await saveDraft('vehicleDetailsFormData', formData);
@@ -531,7 +538,7 @@ const VehicleDetails: React.FC = () => {
       </div>
       <div className="space-x-4">
         <Button text="Reset" colors={primary} onClick={resetForm}><ReplayIcon /></Button>
-        <Button children={undefined} text="Save" colors={darkPrimary} onClick={() => handleSave} disabled={isFormIncomplete} />
+        <Button children={undefined} text="Save" colors={darkPrimary} onClick={handleSave} disabled={isFormIncomplete} />
       </div>
     </div>
   );

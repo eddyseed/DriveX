@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import styles from '../../../assets/styles/Components/Forms/UsedCar.module.scss';
 import InputField from '../../UI/atoms/InputField';
 import Button from '../../UI/atoms/Button';
-  import ConfirmModal from '../../Common/Modals/ConfirmModal';
+import ConfirmModal from '../../Common/Modals/ConfirmModal';
 import ErrorModal from '../../Common/Modals/ErrorModal';
 import { useColorContext } from '../../../context/ColorContext';
 import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
 import { clearDraft, loadDraft, saveDraft } from '../../../utils/indexedDBUtils';
 import axios from 'axios';
+import { useForm } from '../../../context/UsedCarFormContext';
 
 const VehicleHistory: React.FC = () => {
   const { colors } = useColorContext();
@@ -25,7 +26,7 @@ const VehicleHistory: React.FC = () => {
 
   // Check if any form field is empty
   const isFormIncomplete = Object.entries(formData).some(([_, value]) => !value);
-
+  const { usedCarFormData } = useForm();
   // Modal and error state management
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [error, setError] = useState<string>("");
@@ -66,11 +67,67 @@ const VehicleHistory: React.FC = () => {
 
   // Validate form completeness before opening confirmation modal
   const handleSave = async () => {
-    if (isFormIncomplete) {
-      setError("Please fill in all the required fields");
-  
+    
+    {if (!usedCarFormData.vin || usedCarFormData.vin.trim() === '') {
+      setError("Please fill the details of your car properly!");
       return;
     }
+    if (formData.previousOwners === '0') {
+      setError("Used cars must have at least one previous owner.");
+      return;
+    }
+    if (Number(formData.distanceDriven) < 100) {
+      setError("Used cars must have a distance driven greater than 100km.");
+      return;
+    }
+    if (formData.serviceHistory.trim() === '') {
+      setError("Service history cannot be empty.");
+      return;
+    }
+    if (formData.accidentHistory.trim() === '') {
+      setError("Accident history cannot be empty.");
+      return;
+    }
+    if (formData.lastServiceDate.trim() === '') {
+      setError("Last service date cannot be empty.");
+      return;
+    }
+    if (new Date(formData.lastServiceDate) > new Date()) {
+      setError("Last service date cannot be in the future.");
+      return;
+    }
+    if (new Date(formData.lastServiceDate) < new Date('2000-01-01')) {
+      setError("Last service date cannot be before 2000.");
+      return;
+    }
+    if (new Date(formData.lastServiceDate) > new Date(usedCarFormData.year)) {
+      setError("Last service date cannot be after the car's manufacturing year.");
+      return;
+    }
+    if (new Date(formData.lastServiceDate) < new Date(usedCarFormData.year - 10)) {
+      setError("Last service date cannot be more than 10 years before the car's manufacturing year.");
+      return;
+    }
+    if (Number(formData.distanceDriven) > 1000000) {
+      setError("Distance driven cannot exceed 1,000,000 km.");
+      return;
+    }
+    if (Number(formData.previousOwners) > 10) {
+      setError("Number of previous owners cannot exceed 10.");
+      return;
+    }
+    if (Number(formData.previousOwners) < 0) {
+      setError("Number of previous owners cannot be negative.");
+      return;
+    }
+    if (Number(formData.distanceDriven) < 0) {
+      setError("Distance driven cannot be negative.");
+      return;
+    }
+    if (isFormIncomplete) {
+      setError("Please fill in all the required fields");
+      return;
+    }}
     setShowConfirmation(true);
     setError('');
   };
@@ -83,13 +140,21 @@ const VehicleHistory: React.FC = () => {
     try {
       const response = await axios.post(
         'http://localhost:5000/api/abstract/addUsedCar',
-        [formData, 'vehicleHistory']
+        {
+          formData,
+          type: 'vehicleHistory',
+          VIN: usedCarFormData.vin
+        }
       );
       if (response.data.message) {
         await saveDraft('vehicleHistoryFormData', formData);
       }
     } catch (error) {
-      console.error(error);
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data.error || 'An error occurred while saving the data');
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
   };
 
@@ -204,7 +269,7 @@ const VehicleHistory: React.FC = () => {
       <div>
         <div className="space-x-4">
           <Button text="Reset" colors={primary} onClick={resetForm}><ReplayIcon /></Button>
-          <Button children={undefined} text="Save" colors={darkPrimary} onClick={handleSave} disabled={isFormIncomplete}/>
+          <Button children={undefined} text="Save" colors={darkPrimary} onClick={handleSave} disabled={isFormIncomplete} />
         </div>
       </div>
     </div>
