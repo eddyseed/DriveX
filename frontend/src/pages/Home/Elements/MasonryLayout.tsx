@@ -14,13 +14,13 @@ const MasonryLayout: React.FC = () => {
             {
                 id: 1,
                 name: "Tesla Model S",
-                image: "https://imgd.aeplcdn.com/1280x720/n/cw/ec/26859/grand-i10-exterior-right-front-three-quarter.jpeg?q=80",
+                image: "https://assets.entrepreneur.com/content/3x2/2000/1686042484-Untitleddesign83.jpg",
                 price: "$79,990",
             },
             {
                 id: 2,
                 name: "BMW X5 M60i",
-                image: "https://apollo.olx.in/v1/files/mwuwjgr4f5s61-IN/image;s=360x0",
+                image: "https://robbreport.com/wp-content/uploads/2024/08/temerario01.jpg?w=800",
                 price: "$61,700",
             },
             {
@@ -38,7 +38,13 @@ const MasonryLayout: React.FC = () => {
             {
                 id: 5,
                 name: "Cybertruck",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/2013_Toyota_Kijang_Innova_2.0E_in_Kuta%2C_Bali%2C_Indonesia_%2801%29.jpg/1024px-2013_Toyota_Kijang_Innova_2.0E_in_Kuta%2C_Bali%2C_Indonesia_%2801%29.jpg",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/2019_Toyota_Corolla_Icon_Tech_VVT-i_Hybrid_1.8.jpg/960px-2019_Toyota_Corolla_Icon_Tech_VVT-i_Hybrid_1.8.jpg",
+                price: "$54,999"
+            },
+            {
+                id: 6,
+                name: "Cybertruck",
+                image: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Porsche/911/11757/1717680690776/front-left-side-47.jpg?impolicy=resize",
                 price: "$54,999"
             },
         ];
