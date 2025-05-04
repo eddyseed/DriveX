@@ -20,7 +20,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({ head, msg, visible, onClose }) 
 
     const timer = setTimeout(() => {
       onClose();
-    }, 2000);
+    }, 3*1000);
 
     return () => clearTimeout(timer);
   }, [visible, onClose]);
