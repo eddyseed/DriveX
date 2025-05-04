@@ -1,10 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-
 //For Adding Car Data To Database
 const addUsedCarDetails = async (req, res) => {
-    const [formData, type] = req.body
+    const { formData, type, VIN } = req.body;
     if (type === 'ownerData') {
         const { firstName, middleName, lastName, mobileNumber, altMobileNumber, dateOfBirth, address } = formData;
         const fullName = [firstName, middleName, lastName]
@@ -45,21 +44,28 @@ const addUsedCarDetails = async (req, res) => {
             if (isNaN(serviceDate.getTime())) {
                 return res.status(400).json({ error: 'Invalid last service date format' });
             }
-
+            if (!VIN) {
+                return res.status(400).json({ error: 'VIN is required' });
+            }
             const vehicleHistory = await prisma.used_cars.create({
                 data: {
+                    vin: VIN,
                     previous_owners: Number(previousOwners),
                     km_driven: parseInt(distanceDriven.replace(/\D/g, '')),
                     service_history: serviceHistory.trim(),
                     last_service_date: serviceDate,
                     accident_history: accidentHistory.trim(),
-                    resale_price: 0
+                    resale_price: 0,
+                    // car_catalog: {
+                    //     connect: {
+                    //         vin: VIN
+                    //     }
+                    // }
                 }
             });
 
             res.status(200).json({
-                message: 'Vehicle history added successfully',
-                data: vehicleHistory
+                message: 'Vehicle history added successfully'
             });
 
         } catch (error) {
@@ -97,23 +103,24 @@ const addUsedCarDetails = async (req, res) => {
             gearbox,
             fuelTankCapacity,
             emissionNormCompliance,
-        } = req.body;
+        } = formData;
         try {
             const vehicleDetailsInsertQuery = await prisma.car_catalog.create({
                 data: {
                     vin: vin,
                     name: modelName,
                     brand: producer,
-                    model_year: makeYear,
+                    model_year: Number(makeYear),
                     category: category,
                     fuel_type: fuelType,
                     transmission: transmission,
-                    engine_capacity: engineDisplacement,
-                    horsepower: horsepower,
+                    engine_capacity: Number(engineDisplacement),
+                    horsepower: Number(horsepower),
                     torque: torque,
                     mileage: mileage,
-                    seating_capacity: seatingCapacity,
+                    seating_capacity: Number(seatingCapacity),
                     color: color,
+                    showroom_price: 0,
 
                 }
 
@@ -125,6 +132,55 @@ const addUsedCarDetails = async (req, res) => {
 
         } catch (error) {
             console.error("❌ Error adding vehicle details:", error);
+            res.status(500).json({
+                error: 'Internal Server Error',
+                details: error.message
+            });
+        }
+    } else if (type === 'vehiclePricingInfo') {
+        const { resalePrice } = formData;
+        if (isNaN(resalePrice) || resalePrice <= 0) {
+            return res.status(400).json({ error: 'Invalid resale price' });
+        }
+        try {
+            const vehiclePricingInfo = await prisma.used_cars.update({
+                where: {
+                    vin: VIN,
+                },
+                data: {
+                    resale_price: Number(resalePrice)
+                }
+            });
+            res.status(200).json({
+                message: 'Vehicle pricing info added successfully',
+                data: vehiclePricingInfo
+            });
+        } catch (error) {
+            console.error("❌ Error adding vehicle pricing info:", error);
+            res.status(500).json({
+                error: 'Internal Server Error',
+                details: error.message
+            });
+        }
+    }
+    else if (type === 'confirmation') {
+        const { confirmation } = formData;
+        console.log("Confirmation:", confirmation, typeof (confirmation));
+        try {
+            const vehicleConfirmation = await prisma.car_catalog.update({
+                where: {
+                    vin: VIN,
+                },
+                data: {
+                    isAvailable: Boolean(confirmation)
+                }
+            });
+            res.status(200).json({
+                message: 'Vehicle confirmation updated successfully',
+                data: vehicleConfirmation
+            });
+        } catch (error) {
+            console.error("❌ Error updating vehicle confirmation:", error);
             res.status(500).json({
                 error: 'Internal Server Error',
                 details: error.message
@@ -156,6 +212,7 @@ const handleSearchQuery = async (req, res) => {
                     car_catalog: {
                         brand: producer,
                         category: category,
+                        isAvailable: true
                     },
                     on_road_price: {
                         lte: budgetRange
@@ -172,6 +229,7 @@ const handleSearchQuery = async (req, res) => {
                     car_catalog: {
                         brand: producer,
                         category: category,
+                        isAvailable: true
                     },
                     resale_price: {
                         lte: budgetRange
