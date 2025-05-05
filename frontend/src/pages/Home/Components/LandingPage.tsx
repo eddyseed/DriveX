@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Masonry from 'react-masonry-css';
 import styles from '../../../assets/styles/Components/Home.module.scss';
 import Product from '../../Products/ProductPage';
 import axios from 'axios';
@@ -47,7 +46,6 @@ interface InitialData {
 const LandingPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(new String(''));
-
     const [filteredSearchBrands, setfilteredSearchBrands] = useState<Set<string>>(new Set());
     const [filteredCategories, setfilteredCategories] = useState<Set<string>>(new Set());
     const [filteredCars, setFilteredCars] = useState<Car[]>(new Array())

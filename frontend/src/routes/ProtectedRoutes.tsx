@@ -1,7 +1,6 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
-import ErrorModal from '../components/Common/Modals/ErrorModal';
 
 type ProtectedRoutesProps = {
   children: ReactNode;
@@ -10,7 +9,7 @@ type ProtectedRoutesProps = {
 const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
   const { user } = useAuth();
   const location = useLocation();
-  const [showRedirect, setShowRedirect] = useState(false);
+  const [showRedirect] = useState(false);
 
   if (!user) {
     if (!showRedirect) {

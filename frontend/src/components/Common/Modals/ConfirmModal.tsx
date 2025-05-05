@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from '../../../assets/styles/Components/Modals.module.scss';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useColorContext } from '../../../context/ColorContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../../UI/atoms/Button';
-import { Cancel } from '@mui/icons-material';
 interface ConfirmModalProps {
   msgHead: string;
   msgTitle: string;
@@ -51,9 +50,6 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             </div>
           </section>
           <section>
-            {/* <Button colors={successGreen} onClick={onClose}>
-              <CancelIcon />
-            </Button> */}
           </section>
         </motion.div>
       )}

@@ -1,8 +1,8 @@
 @import '../variables';
 
 .BTN {
-    height: 100%;
-    width: auto;
+    block-size: 100%;
+    inline-size: auto;
     display: flex;
     align-items: center;
     justify-content: center;

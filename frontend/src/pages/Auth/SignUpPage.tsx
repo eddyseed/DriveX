@@ -6,7 +6,6 @@ import Button from '../../components/UI/atoms/Button';
 import GoogleIcon from '@mui/icons-material/Google';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import AppleIcon from '@mui/icons-material/Apple';
-import DangerousIcon from '@mui/icons-material/Dangerous';
 import axios from 'axios';
 import { useColorContext } from '../../context/ColorContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -94,14 +93,10 @@ const SignupPage: React.FC = () => {
     console.log('Sign up data:', formData);
     try {
       const response = await axios.post('http://localhost:5000/api/auth/signup/', formData, { withCredentials: true });
-      console.log('Response:', response.data);
       if (response.data.success) {
-        alert('Sign up successful!');
-        // Redirect to login or home page
         navigate('/user/login')
       }
     } catch (error) {
-      console.error('Error during sign up:', error);
       setError('An error occurred during sign up.');
 
     }

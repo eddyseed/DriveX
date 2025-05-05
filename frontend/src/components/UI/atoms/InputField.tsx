@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from '../../../assets/styles/Elements/InputField.module.scss';
-import { ClassNames } from '@emotion/react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     type?: string;
