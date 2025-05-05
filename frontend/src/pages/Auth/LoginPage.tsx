@@ -11,33 +11,33 @@ import { useColorContext } from '../../context/ColorContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import signInPhoto from '../../assets/images/SignIn.png';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { useAuth } from '../../context/AuthContext';
 import ErrorModal from '../../components/Common/Modals/ErrorModal';
+import { supabase } from '../../utils/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-
   });
   const [error, setError] = useState<string>("");
   const { colors } = useColorContext();
   const { primary, darkPrimary, darkSecondary } = colors.variants;
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const [showError, setShowError] = useState(false);
   const { login } = useAuth();
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  const location = useLocation();
-  const [showError, setShowError] = useState(false);
+
   useEffect(() => {
     if (location.state?.loginRequired) {
       setShowError(true);
       window.history.replaceState({}, document.title);
     }
   }, [location]);
+
   const handleSubmit = async () => {
     if (!formData.email || !formData.password) {
       setError("Please fill in all fields");
@@ -52,6 +52,25 @@ const LoginPage: React.FC = () => {
       setError(err?.response?.data?.message || "Unknown error occurred.");
     }
   };
+
+  const loginWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        },
+
+      })
+      if (error) {
+        setError('OAuth login error: ' + error.message);
+      }
+      ;
+
+    } catch (error) {
+      setError('Unexpected error during OAuth login:' + error);
+    };
+  }
 
   return (
     <div className={`${styles.AUTH_CONTAINER}`}>
@@ -68,23 +87,19 @@ const LoginPage: React.FC = () => {
       </main>
 
       <main className={`${styles.AUTH_BOX}`}>
-        {/* Sign Up Box Text Headings */}
         <div>
           <header className='text-2xl montserrat-ff flex items-end'>
-            {/* <Link to="/" className='bungee-tint-regular'>DriveX</Link> */}
           </header>
           <header className=' text-3xl font-semibold montserrat-ff flex items-end'>Welcome Back User</header>
-          <span className=' text-sm'>Please enter your details to sign in. • Don't have an account? <a href='/user/signup/' className='font-semibold underline'>Sign In</a></span>
+          <span className=' text-sm'>Please enter your details to sign in. • Don't have an account? <a href='/user/signup/' className='font-semibold underline'>Sign Up</a></span>
         </div>
 
-        {/* Firebase Authentication Icons and OR Divider */}
         <div>
           <div>
             <div className='flex items-center space-x-3'>
               <Button colors={darkPrimary} text='Continue With Apple'>{<AppleIcon />}</Button>
-              <Button colors={darkSecondary} text='Continue With Google'>{<GoogleIcon />}</Button>
+              <Button colors={darkSecondary} text='Continue With Google' onClick={loginWithGoogle}>{<GoogleIcon />}</Button>
               <Button colors={darkPrimary} text='Continue With Twitter'>{<TwitterIcon />}</Button>
-
             </div>
             <div className=''>
               <section><div></div></section>
@@ -92,9 +107,17 @@ const LoginPage: React.FC = () => {
               <section><div></div></section>
             </div>
           </div>
+
           <div>
             <div>
-              {showError && <ErrorModal head={'Login Required!'} visible={true} onClose={() => setError('')} msg={'Kindly proceed from here.'} />}
+              {showError && (
+                <ErrorModal
+                  head={'Login Required!'}
+                  visible={true}
+                  onClose={() => setShowError(false)}
+                  msg={'Kindly proceed from here.'}
+                />
+              )}
               {error && <ErrorModal head={'Failure in Login :('} visible={true} onClose={() => setError('')} msg={error} />}
             </div>
 
@@ -113,16 +136,14 @@ const LoginPage: React.FC = () => {
 
           </div>
         </div>
-        {/* Terms and Conditions Checkbox and Submit Button */}
+
         <div className='grid grid-cols-2'>
           <div className='flex items-center space-x-2'>
             <input type="checkbox" id="terms" name="terms" required onChange={handleChange} />
             <label htmlFor="terms" className='select-none'>Remember Me</label>
           </div>
           <div className='flex items-center space-x-2 justify-end'>
-
             <Button disabled={!formData.email || !formData.password} colors={darkPrimary} onClick={(e) => { e.preventDefault(); handleSubmit(); }}>Sign In</Button>
-
           </div>
         </div>
       </main>
