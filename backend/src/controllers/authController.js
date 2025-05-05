@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
 const { generateToken } = require('../utils/jwUtils');
 const { PrismaClient } = require('@prisma/client');
+// import { supabase } from './supabaseClient'; // Make sure to configure this in a separate file
 
 const prisma = new PrismaClient();
+
 const signup = async (req, res) => {
   try {
     const { name, email, password, role, confirmPassword, mobile, terms } = req.body;

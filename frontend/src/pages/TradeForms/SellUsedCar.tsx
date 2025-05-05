@@ -2,16 +2,12 @@ import React, { useState } from 'react';
 import styles from '../../assets/styles/Components/Forms/UsedCar.module.scss'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import DirectionsCarFilledOutlinedIcon from '@mui/icons-material/DirectionsCarFilledOutlined';
-import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
-import DocumentScannerOutlinedIcon from '@mui/icons-material/DocumentScannerOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import DoneOutlineOutlinedIcon from '@mui/icons-material/DoneOutlineOutlined';
 import OwnerInfo from '../../components/Forms/UsedCar/OwnerInfo';
 import VehicleHistory from '../../components/Forms/UsedCar/VehicleHistory';
 import VehicleDetails from '../../components/Forms/UsedCar/VehicleDetails';
-import IDVerification from '../../components/Forms/UsedCar/IDVerification';
-import UploadDocs from '../../components/Forms/UsedCar/UploadDocs';
 import PricingInfo from '../../components/Forms/UsedCar/PricingInfo';
 import FinalOverview from '../../components/Forms/UsedCar/FinalOverview';
 import { FormProvider } from '../../context/UsedCarFormContext';
