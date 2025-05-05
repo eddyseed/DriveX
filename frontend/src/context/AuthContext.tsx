@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, ReactNode, useContext } from 'react
 import axios from 'axios';
 // User type definition
 interface User {
-    id: number;
+    id: Number;
     name: string;
     email: string;
     role: string;
@@ -12,10 +12,12 @@ interface User {
 // Type for the context
 interface AuthContextType {
     user: User | null;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
     login: (credentials: { email: string; password: string }) => Promise<void>;
     logout: () => Promise<void>;
     isAuthenticated: boolean;
-    isLoading: boolean
+    isLoading: boolean,
+
 }
 
 // Context creation
@@ -61,12 +63,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsAuthenticated(false)
         setUser(null);
         window.location.href = '/?logout=true'
-     
+
 
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
+        <AuthContext.Provider value={{ user, setUser, isAuthenticated, isLoading, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
