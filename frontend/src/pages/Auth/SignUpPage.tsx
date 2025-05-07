@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import styles from '../../assets/styles/Components/AuthPage.module.scss';
 import InputField from '../../components/UI/atoms/InputField';
 import Button from '../../components/UI/atoms/Button';
-
+import supabase from '../../utils/supabaseClient';
 import GoogleIcon from '@mui/icons-material/Google';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import AppleIcon from '@mui/icons-material/Apple';
-import axios from 'axios';
 import { useColorContext } from '../../context/ColorContext';
 import { Link, useNavigate } from 'react-router-dom';
 import signUpPhoto from '../../assets/images/SignUp.png';
@@ -14,7 +13,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import ErrorModal from '../../components/Common/Modals/ErrorModal';
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     mobile: '',
     email: '',
     role: '',
@@ -34,72 +33,32 @@ const SignupPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    setError(''); // Reset error message
-    // Check for empty fields first
-    if (
-      !formData.name ||
-      !formData.mobile ||
-      !formData.email ||
-      !formData.role ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
-      setError("Please fill in all fields");
+    const { fullName, mobile, email, role, password } = formData;
+    const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (signUpError) {
+      setError(signUpError.message);
       return;
     }
 
-    // Validate email format
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address");
+    const userId = authData.user?.id;
+
+    const { error: profileError } = await supabase.from('user_profiles').insert([{
+      id: userId,
+      full_name: fullName,
+      role,
+      mobile
+    }]);
+
+    if (profileError) {
+      setError(profileError.message);
       return;
     }
 
-    // Validate mobile number
-    const mobileRegex = /^[0-9]{10}$/;
-    if (!mobileRegex.test(formData.mobile)) {
-      setError("Please enter a valid mobile number");
-      return;
-    }
-
-    // Validate password length
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
-    // Check if passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    // Validate role
-    const validRoles = ['customer', 'seller', 'admin'];
-    if (!validRoles.includes(formData.role)) {
-      setError("Please select a valid role");
-      return;
-    }
-
-    // Check terms acceptance
-    if (!formData.terms) {
-      setError("Please accept the terms and conditions");
-      return;
-    }
-
-    //Add if all fields are properly filled and valid then remove error first
-    setError('');
-    // TODO: Add sign-up logic here
-    console.log('Sign up data:', formData);
-    try {
-      const response = await axios.post('http://localhost:5000/api/auth/signup/', formData, { withCredentials: true });
-      if (response.data.success) {
-        navigate('/user/login')
-      }
-    } catch (error) {
-      setError('An error occurred during sign up.');
-
-    }
+    console.log("Signed up successfully! Please check your email.");
 
   };
 
@@ -151,7 +110,7 @@ const SignupPage: React.FC = () => {
             <div className="grid grid-cols-2">
               <div className='space-y-1'>
                 <label htmlFor="name">Enter Name*</label>
-                <InputField name='name' id='name' placeholder='Enter your name...' onChange={handleChange} type='text' required value={formData.name} />
+                <InputField name='name' id='name' placeholder='Enter your name...' onChange={handleChange} type='text' required value={formData.fullName} />
               </div>
               <div className='space-y-1'>
                 <label htmlFor="mobile">Enter Mobile Number*</label>
@@ -207,7 +166,7 @@ const SignupPage: React.FC = () => {
               !formData.password ||
               !formData.confirmPassword ||
               !formData.mobile ||
-              !formData.name ||
+              !formData.fullName ||
               !formData.role ||
               !formData.terms
             } onClick={(e) => { e.preventDefault(); handleSubmit(); }}>Register</Button>

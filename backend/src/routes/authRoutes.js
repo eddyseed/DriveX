@@ -8,9 +8,9 @@ const router = express.Router();
 
 // Add reCAPTCHA verification before processing requests
 router.post('/signup', authProcess.signup);
-router.post('/login', authProcess.login);
-router.post('/logout', authProcess.logout)
-router.get("/me", verifyToken, authProcess.returnUser);
+// router.post('/login', authProcess.login);
+// router.post('/logout', authProcess.logout)
+// router.get("/me", verifyToken, authProcess.returnUser);
 
 
 module.exports = router;

@@ -189,9 +189,6 @@ const addUsedCarDetails = async (req, res) => {
     }
 }
 
-
-
-//For posting data from database to frontend
 const handleSearchQuery = async (req, res) => {
     const { producer, category, car_type, budgetRange } = req.body;
 
