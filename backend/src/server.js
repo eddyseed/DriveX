@@ -1,31 +1,34 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
+const data = require('../package.json');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const dashBoardRoute = require('./routes/dashboardRoute'); 
-const cookieParser = require('cookie-parser');
-require('dotenv').config();
+
+
 const app = express();
-// Middleware
+
 app.use(cookieParser())
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000', // ✅ exact origin of frontend
+    origin: `http://localhost:${process.env.APPLICATION_PORT}`,
     credentials: true
 }));
 
-// Test Route
 app.get('/', (req, res) => {
     res.json({
-        "name":"DriveX"
+        "name": data.name,
+        "language": req.headers['accept-language']
     });
 });
-// API Routes
-app.use('/api/auth', authRoutes);
+
+app.use('/api/auth/', authRoutes);
 app.use('/api/abstract/', productRoutes);
 app.use('/api/', dashBoardRoute)
 
 
-// Server Configuration
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+const PORT = process.env.SERVER_PORT || '5000';
+app.listen(PORT, () => console.log(`Go To: http://localhost:${PORT}/`));
