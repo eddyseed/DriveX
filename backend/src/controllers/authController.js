@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const { generateToken } = require('../utils/jwUtils');
 const { PrismaClient } = require('@prisma/client');
-// import { supabase } from './supabaseClient'; // Make sure to configure this in a separate file
 
 const prisma = new PrismaClient();
 
@@ -81,7 +80,6 @@ const signup = async (req, res) => {
   }
 };
 
-
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -133,7 +131,6 @@ const login = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
-
 const logout = (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,

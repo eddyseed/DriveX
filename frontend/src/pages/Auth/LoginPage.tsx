@@ -12,7 +12,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import signInPhoto from '../../assets/images/SignIn.png';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import ErrorModal from '../../components/Common/Modals/ErrorModal';
-import { supabase } from '../../utils/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -53,25 +52,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const loginWithGoogle = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        },
-
-      })
-      if (error) {
-        setError('OAuth login error: ' + error.message);
-      }
-      ;
-
-    } catch (error) {
-      setError('Unexpected error during OAuth login:' + error);
-    };
-  }
-
   return (
     <div className={`${styles.AUTH_CONTAINER}`}>
       <main className='car-banner montserrat-ff'>
@@ -98,7 +78,7 @@ const LoginPage: React.FC = () => {
           <div>
             <div className='flex items-center space-x-3'>
               <Button colors={darkPrimary} text='Continue With Apple'>{<AppleIcon />}</Button>
-              <Button colors={darkSecondary} text='Continue With Google' onClick={loginWithGoogle}>{<GoogleIcon />}</Button>
+              <Button colors={darkSecondary} text='Continue With Google'>{<GoogleIcon />}</Button>
               <Button colors={darkPrimary} text='Continue With Twitter'>{<TwitterIcon />}</Button>
             </div>
             <div className=''>
