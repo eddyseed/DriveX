@@ -1,0 +1,25 @@
+import { ToolProvider } from "@/context/ToolContext";
+import "@/styles/globals.css";
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "DriveX - Powered by Nextjs",
+  description: "Drive kitten cars free",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className="bg-gray-950">
+        <ToolProvider>
+          {children}
+        </ToolProvider>
+      </body>
+    </html>
+  );
+}

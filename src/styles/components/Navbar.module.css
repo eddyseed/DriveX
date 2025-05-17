@@ -1,0 +1,22 @@
+.navigation_bar{
+    display: grid;
+    grid-template-columns: 7fr 1fr;
+    height: 8vh;
+    &>div{
+        border: 1px solid #6366f1;
+        &:first-child{
+            display: flex;
+            align-items: center;
+            button{
+                background-color: transparent;
+                border: 1px solid #6366f1;
+                
+            }
+        }
+        &:last-child{
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+    }
+}

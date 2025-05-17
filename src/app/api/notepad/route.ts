@@ -1,0 +1,1 @@
+import client from "@/lib/mongo/mongo-config";
