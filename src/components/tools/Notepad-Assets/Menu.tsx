@@ -17,7 +17,7 @@ import {
 
 const Menu: React.FC = () => {
   return (
-    <Menubar className="bg-transparent text-white border-none">
+    <Menubar className="preset-1 border-none w-min">
     <MenubarMenu>
       <MenubarTrigger>File</MenubarTrigger>
       <MenubarContent>
@@ -291,7 +291,7 @@ const Menu: React.FC = () => {
             Tab Size
           </MenubarSubTrigger>
           <MenubarSubContent>
-            <MenubarRadioGroup value="4">
+            <MenubarRadioGroup value="2">
               <MenubarRadioItem value="2">2</MenubarRadioItem>
               <MenubarRadioItem value="4">4</MenubarRadioItem>
               <MenubarRadioItem value="6">6</MenubarRadioItem>
